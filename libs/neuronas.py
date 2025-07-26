@@ -7,6 +7,34 @@ class NeuronaPerceptron:
         self.salidas = salidas
         self.pesos_Ws = None
         self.bias = None
+        self.ratio_aprendizaje = 0.025
+        self.epocas = 20
+        self.__iniciar_pesos_y_bias()
+
+    def entrenar_ajustar(
+        self, datos_entrada, datos_salida_real, ratio_aprendizaje=0.025, epocas=20
+    ):
+        self.ratio_aprendizaje = ratio_aprendizaje
+        self.epocas = epocas
+        self.__iniciar_pesos_y_bias()
+
+        for _ in range(self.epocas):
+            for i in range(len(datos_entrada[:, 0:0])):
+                # ir uno a uno, volverlo vector plano
+                entrada_Xi = datos_entrada[i, :].flatten()
+                salida_real_Yi = float(datos_salida_real[i])
+                salida_estimada_Yi = float(self.predecir_feedforward(entrada_Xi))
+                error = salida_real_Yi - salida_estimada_Yi
+                factor_ajuste = self.ratio_aprendizaje * error
+                self.__ajustar_pesos(entrada_Xi, factor_ajuste)
+                self.__ajustar_bias(factor_ajuste)
+
+    def __ajustar_pesos(self, entrada_Xi, factor_ajuste):
+        for i in range(len(entrada_Xi)):
+            self.pesos_Ws[i] += factor_ajuste * entrada_Xi[i]
+
+    def __ajustar_bias(self, factor_ajuste):
+        self.bias += factor_ajuste
 
     def predecir_feedforward(self, muestra_datos):
         if self.__is_one_dimension(muestra_datos):
